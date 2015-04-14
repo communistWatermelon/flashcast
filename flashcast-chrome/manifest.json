@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "FlashCast",
+  "description": "Simple addition to the FlashCast application",
+  "version": "1.0",
+  
+  "permissions": ["contextMenus", "http://localhost/*"],
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  }
+}

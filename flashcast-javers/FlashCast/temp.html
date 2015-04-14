@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/css/materialize.min.css">
+
+		<!-- Compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/js/materialize.min.js"></script>
+
+		<style type="text/css">
+			body {
+				background: rgb(45, 45, 45);
+			}
+
+			.brand-logo {
+				padding-left: 15px !important;
+			}
+
+			.panel, .flip {
+				padding: 5px;
+				text-align: center;
+				/*border: 1px solid #c3c3c3;*/
+			}
+
+			.file-field > .btn {
+				left: 0;
+			}
+
+			.fileForm {
+				display: none;
+			}
+
+			.card {
+				height: 200px;
+			}
+
+			.card-reveal {
+				overflow-y: hidden !important;
+			}
+
+			.fileUploadButton {
+				margin-bottom: -5px;
+			}
+
+			.fileUploadInput {
+				display: inline-block;
+				width: calc(100% - 100px) !important;
+			}
+
+			.mdi-navigation-close {
+				position: absolute;
+				right: 20px;
+				top: 10px;
+				font-size: 1.7em;
+				color: black !important;
+			}
+
+
+		</style>
+
+		<script type="text/JavaScript">
+			$(document).ready(function(){
+				$(".content").on("click", ".flip", function() {
+					$(this).next(".card").slideToggle("slow");
+				});
+
+				$(".content").on("click", ".card .linkButton", function() {
+					$(this).parents(".card").find(".linkForm").show();
+					$(this).parents(".card").find(".fileForm").hide();
+				});
+
+				$(".content").on("click", ".card .fileButton", function() {
+					$(this).parents(".card").find(".fileForm").show();
+					$(this).parents(".card").find(".linkForm").hide();
+				});
+
+				$(".content").on("click", ".card .fileUploadButton", function() {
+					var that = this;
+
+					$.get("file-api").then(function(response) {
+						$(that).next().val(response);
+					});
+				});
+
+				$(".content").on("click", ".card .sendButton", function() {
+					var type = "";
+					var value = "";
+
+					if ($(this).parents(".card").find("form:visible").hasClass("linkForm")) {
+						type = "link";
+						value = $(this).parents(".card").find(".linkForm input[name='value']").val();
+					} else {
+						type = "file";
+						value = $(this).parents(".card").find(".fileUploadInput").val();
+					}
+
+					sendTo({
+						dest: $(this).parents(".flip").data("ip"),
+						type: type,
+						value: value
+					});
+				});
+
+				function sendTo(data) {
+					return $.get("send", data);
+				}
+
+				function fetch() {
+					return $.ajax("flashcast-api").then(function(response) {
+						$(".content").html(response);
+					}).then(function() {
+						$(".title-ip").each(function() {
+							$(this).text( $(this).parents(".flip").data("ip") );
+						});
+					});
+				}
+
+				fetch();
+				//setInterval(fetch, 30000);
+
+				$(".modal .collection").on("click", "a", function(e) {
+					$(".modal .collection > a").removeClass("active");
+					$(this).addClass("active");
+				});
+
+				$(".modal .modal-action").on("click", function(e) {
+					// send to this person!!
+					sendTo({
+						dest: $(".modal .collection > a.active").text(),
+						type: "link",
+						value: decodeURIComponent( window.location.href.slice(window.location.href.indexOf('?') + 3))
+					}).then(function() {
+						history.pushState(null, null, "/");
+					});
+				});
+
+				if (window.location.href.indexOf('?') != -1) {
+					// populate the modal!
+					fetch().then(function() {
+						$(".flip").each(function(index, element) {
+							$(".modal .collection").append("<a href='#!' class='collection-item'>" + $(element).data("ip") + "</a>");
+						});
+					});
+
+					$('#modal1').openModal();
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<nav class="teal">
+		<div class="nav-wrapper">
+			<a href="/" class="brand-logo">FlashCast</a>
+			<ul id="nav-mobile" class="right hide-on-med-and-down">
+				<li><a href="security.html"><i class="mdi-action-settings"></i></a></li>
+			</ul>
+			</div>
+		</nav>
+
+		<div class="content container"></div>
+
+		<!-- Modal Structure -->
+		<div id="modal1" class="modal modal-fixed-footer">
+			<div class="modal-content">
+				<h4>Send to...</h4>
+				    <div class="collection"></div>
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="waves-effect waves-green btn-flat modal-action modal-close">Send</a>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,10 @@
+<html>
+    <head>
+        <script>
+          chrome.browserAction.onClicked.addListener(function (t) {
+              chrome.tabs.create(
+                  {"url" : "http://www.google.com/buzz/post?url=" + encodeURI(t.url) });
+          });
+        </script>
+    </head>
+</html>

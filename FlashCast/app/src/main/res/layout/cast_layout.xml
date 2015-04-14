@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose File"
+        android:id="@+id/chooseFileButton"
+        android:onClick="chooseFile"
+        android:layout_below="@+id/fileTextBox"
+        android:layout_alignStart="@+id/fileTextBox"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/linkText"
+        android:layout_below="@+id/chooseFileButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="64dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginLeft="32dp"
+        android:singleLine="true"
+        android:lines="1"
+        android:imeOptions="actionDone"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Link"
+        android:id="@+id/sendLinkButton"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/linkText"
+        android:layout_centerHorizontal="true"
+        android:onClick="sendLink"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fileTextBox"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="no file chosen"
+        android:gravity="center_vertical|center_horizontal"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send File"
+        android:id="@+id/sendFileButton"
+        android:layout_above="@+id/linkText"
+        android:layout_alignEnd="@+id/fileTextBox"
+        android:enabled="false"
+        android:onClick="sendFile"/>
+
+</RelativeLayout>

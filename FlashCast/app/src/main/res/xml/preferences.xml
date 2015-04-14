@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="Password"
+        android:key="network_password"
+        android:summary="Enter a network password for use only with FlashCast. All devices that wish to communicate must use the same password!">
+    </EditTextPreference>
+    <PreferenceCategory
+        android:title="Firewall Preferences">
+        <CheckBoxPreference
+            android:key="firewall_state_preference"
+            android:title="Firewall"
+            android:summary="Firewall functionality enabled"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="link_state_preference"
+            android:dependency="firewall_state_preference"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="Allow Links"
+            android:summary="Allow links to be sent to this device"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="file_state_preference"
+            android:dependency="firewall_state_preference"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="Allow Files"
+            android:summary="Allow files to be sent to this device"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="raw_state_preference"
+            android:dependency="firewall_state_preference"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="Allow Raw Data"
+            android:summary="Allow raw data to be sent to this device"
+            android:defaultValue="false"/>
+        </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Firewall Settings">
+        <ListPreference
+            android:key="whitelist_state_preference"
+            android:title="WhiteList/BlackList"
+            android:summary="Switches between whitelisting and blacklisting links"
+            android:defaultValue="1"
+            android:entries="@array/typeList"
+            android:entryValues="@array/typeListValues" />
+
+        <EditTextPreference
+            android:title="List Elements"
+            android:key="list_elements_preference"
+            android:summary="Enter sites you wish to whitelist/blacklist">
+        </EditTextPreference>
+    </PreferenceCategory>
+</PreferenceScreen>

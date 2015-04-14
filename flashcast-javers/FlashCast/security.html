@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/css/materialize.min.css">
+
+		<!-- Compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/js/materialize.min.js"></script>
+
+		<style type="text/css">
+			body {
+				background: rgb(45, 45, 45);
+			}
+
+			.brand-logo {
+				padding-left: 15px !important;
+			}
+
+			.sendButton {
+				margin: 0;
+			}
+
+			.card .card-content p {
+				margin-top: 15px;
+				margin-bottom: 10px;
+			}
+
+			.form-section {
+				margin-top: 30px;
+			}
+
+			.form-section-title {
+				font-weight: bold;
+				color: grey;
+			}
+
+			.filter-list-field {
+				margin-top: 35px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<script type="text/JavaScript">
+		$(document).ready(function() 
+		{
+		    $('select').material_select();
+		    changeHandler();
+		   	var checkbox = document.getElementById('firewallState');
+		   	checkbox.addEventListener('click', changeHandler)
+
+		   	var sendButton = document.getElementById('sendButton');
+		   	sendButton.addEventListener('click', saveSettings);
+		    fetch();
+		});
+
+		function changeHandler() 
+		{
+		   	if(firewallState.checked)
+		   	{
+		   		document.getElementById("linkState").disabled = false;
+		   		document.getElementById("fileState").disabled = false;
+		   		document.getElementById("rawState").disabled = false;
+		   	} else
+		   	{
+		   		document.getElementById("linkState").disabled = true;
+		   		document.getElementById("fileState").disabled = true;
+		   		document.getElementById("rawState").disabled = true;
+		   	}
+		}
+
+		function readSettings(response)
+		{
+			var tokens = response.split(", ")
+
+			for (i = 0; i < tokens.length; i++)
+			{
+				tokens[i] = tokens[i].split(": ")[1];
+			}
+
+			document.getElementById("firewallState").checked = (tokens[0] == "true");
+			document.getElementById("linkState").checked = (tokens[1] == "true");
+			document.getElementById("fileState").checked = (tokens[2] == "true");
+			document.getElementById("rawState").checked = (tokens[3] == "true");
+			// document.getElementById('filterTypeMenu').selectedIndex = parseInt(tokens[4]) + 1;
+			document.getElementById(parseInt(tokens[4]) + 1).checked=true
+			// console.log();
+
+			tokens[5] = tokens[5].split("-").join(",");
+ 			document.getElementById("filterList").value = tokens[5];
+ 			document.getElementById("filterListLabel").className = "active";
+
+ 			changeHandler();
+
+			// var fileBox = "";
+			// var rawBox = "";
+			// var filteredList = 0;
+			// var filterMenu = document.getElementById("filterTypeMenu");
+			// var filterMenuValue = "";
+		}
+
+		function saveSettings()
+		{
+			var firewallBox = "";
+			var linkBox = "";
+			var fileBox = "";
+			var rawBox = "";
+			var filterRadio = "";
+			var filteredList = 0;
+			
+			firewallBox = $("#firewallState").is(":checked");
+			if (!firewallBox)
+			{
+				linkBox = false;
+				fileBox = false;
+				rawBox = false;
+				filteredList = 0;
+				filterRadio = 2;
+			} else 
+			{
+				linkBox = $("#linkState").is(":checked");
+				fileBox = $("#fileState").is(":checked");
+				rawBox = $("#rawState").is(":checked");
+				filteredList = $("#filterList").val()
+
+				if (document.getElementById('1').checked) 
+				{
+  					filterRadio = 0;
+				} else if (document.getElementById('2').checked) 
+				{
+					filterRadio = 1;
+				} else {
+					filterRadio = 2;
+				}
+			}
+
+			if (filteredList == "")
+			{
+				filteredList = 0;
+			}
+
+			sendTo(
+			{
+				firewall: firewallBox,
+				link: linkBox,
+				file: fileBox,
+				raw: rawBox,
+				filterType: filterRadio,
+				filterList: filteredList
+			});
+		}
+
+		function fetch() {
+			return $.ajax("current-settings").then(function(response) 
+			{
+				readSettings(response);
+			});
+		}
+
+		function sendTo(data) 
+		{
+			return $.get("settings-api", data);
+		}
+
+		</script>
+		<nav class="teal">
+		<div class="nav-wrapper">
+			<a href="/" class="brand-logo">FlashCast</a>
+			<ul id="nav-mobile" class="right hide-on-med-and-down">
+				<li><a href="security.html"><i class="mdi-action-settings"></i></a></li>
+			</ul>
+			</div>
+		</nav>
+		<div class="content container">
+			<div class="card">
+				<div class="card-content">
+					<span class="card-title black-text">Edit Settings</span>
+					<form class="securityForm">
+						<div class="form-section">
+					     	<div class="input-field">
+			        			<input id="password" type="password" class="validate" disabled>
+			        			<label for="password">Password - <strong>Currently not implemented.</strong></label>
+			      			</div>
+						    <label>Enter a network password for use only with FlashCast. All devices that wish to communicate must use the same password.</label>
+						</div>
+
+						<div class="form-section">
+							<div class="form-section-title">Firewall Preferences</div>
+
+							<div>
+					    		<input type="checkbox" id="firewallState" />
+					    		<label for="firewallState">Firewall Functionality Enabled</label>
+							</div>
+
+							<div>
+					    		<input type="checkbox" id="linkState" />
+					    		<label for="linkState">Recieve Links on this device</label>
+							</div>
+
+							<div>
+					    		<input type="checkbox" id="fileState" />
+					    		<label for="fileState">Recieve Files on this device</label>
+							</div>
+
+							<div>
+					    		<input type="checkbox" id="rawState" />
+					    		<label for="rawState">Recieve Raw data on this device</label>
+							</div>
+						</div>
+
+						<div class="form-section">
+							<div class="form-section-title">Firewall Preferences</div>
+							<p id="filterTypeRadio">
+								<input name="group1" type="radio" id="1" />
+								<label for="1">WhiteList</label>
+							
+								<input name="group1" type="radio" id="2" />
+								<label for="2">BlackList</label>
+							
+								<input class="with-gap" name="group1" type="radio" id="3"  />
+								<label for="3">None</label>
+							</p>
+
+							<div class="input-field filter-list-field">
+				        			<input id="filterList" type="text" class="validate">
+				        			<label id="filterListLabel" for="filterList">Filtered</label>
+				  			</div>
+				  			<label>Enter a list of domains, comma seperated, to be filtered, based on Filtering Type<label>
+						</div>
+					</form>
+				</div>
+				<div class="card-action">
+					<div class="waves-effect waves-light btn sendButton" id="sendButton">Save</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
